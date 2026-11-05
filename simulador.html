@@ -30,7 +30,7 @@
 
   <div class="shell">
     <aside class="side">
-      <div class="brand"><img class="logo" src="img/logo.png" alt="Logo Healthy Battery">Healthy Battery</div>
+      <div class="brand"><img class="logo" src="img/logo.png" alt="Logo Healthy Battery">Healthy <b>Battery</b></div>
       <nav>
         <a href="index.html"><svg class="ic"><use href="#i-home"/></svg>Cambiar dispositivo</a>
         <a href="#escenario"><svg class="ic"><use href="#i-sliders"/></svg>Escenario</a>
@@ -49,6 +49,7 @@
         </div>
         <div class="top-r">
           <span class="pill"><svg class="ic" id="devIcon"></svg><span id="devPill">Simulación en vivo</span></span>
+          <button id="reportBtn" class="report-btn" type="button">Generar reporte PDF</button>
           <button id="themeBtn" class="theme-btn" type="button" aria-label="Cambiar a modo oscuro"><svg class="ic"><use href="#i-moon"/></svg></button>
         </div>
       </div>
@@ -118,6 +119,8 @@
       </div>
     </main>
   </div>
+
+  <section id="printReport" class="print-report" aria-label="Reporte de estado de batería"></section>
 
   <script>
     addEventListener('error', function (e) {

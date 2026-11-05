@@ -1,0 +1,9 @@
+.topbar{z-index:12}
+.home-link{display:inline-flex;align-items:center;gap:7px;padding:9px 13px;border:1px solid rgba(160,220,195,.24);
+  border-radius:10px;background:rgba(11,33,29,.72);color:#d8f6e8;font-size:12px;font-weight:700;text-decoration:none;
+  white-space:nowrap;backdrop-filter:blur(12px);transition:background .2s,border-color .2s}
+.home-link:hover,.home-link:focus-visible{background:rgba(31,83,64,.9);border-color:#70f0bd;outline:2px solid #70f0bd;outline-offset:2px}
+@media(max-width:650px){
+  .home-link{position:absolute;top:72px;right:12px;padding:7px 10px;font-size:11px}
+  .mission-card{top:122px}
+}

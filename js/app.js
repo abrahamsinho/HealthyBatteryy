@@ -6,6 +6,7 @@
   // ---- Dispositivo y modelo elegidos (simulador.html?device=phone&model=iphone-15) ----
   const params = new URLSearchParams(location.search);
   const device = DEVICES.find(d => d.id === params.get('device')) || DEVICES[0];
+  document.documentElement.setAttribute('data-device', device.id);
   let variant = resolveVariant(device, params.get('model'));
 
   // Filtro de dispositivos dentro del simulador
@@ -27,12 +28,19 @@
     $('specName').textContent = variant.name;
     $('specModel').textContent = s.modelName && s.modelName !== variant.name ? 'Modelo de referencia: ' + s.modelName : '';
 
-    // Primero la ilustración; si existe la foto real en img/equipos/, la reemplaza
+    // Mantiene la ilustración hasta confirmar que la imagen opcional está disponible.
+    box.classList.remove('has-photo');
     box.innerHTML = DeviceArt.draw(device.icon, variant);
     if (variant.image) {
       const img = new Image();
       img.alt = 'Foto de ' + variant.name;
-      img.onload = () => { if (variant.id === id) box.replaceChildren(img); };
+      img.onload = () => {
+        if (variant.id === id) {
+          img.className = 'device-photo';
+          box.classList.add('has-photo');
+          box.replaceChildren(img);
+        }
+      };
       img.src = variant.image;
     }
 
@@ -141,6 +149,93 @@
     renderLossChart(current, p);
   }
 
+  function reportRecommendations(p, soh) {
+    const recommendations = [];
+    const isPhone = device.id === 'phone';
+
+    if (current.tMax >= 35 || p.tempC >= 30) {
+      recommendations.push('Evita dejar el equipo al sol, dentro de un auto caliente o sobre superficies que retengan calor. Si se calienta durante la carga o una tarea exigente, deja que se ventile y reduce esa actividad hasta que se enfríe.');
+    } else {
+      recommendations.push('Procura mantener el equipo en un lugar fresco y ventilado; el calor sostenido acelera el envejecimiento químico de las baterías.');
+    }
+
+    if (p.smax >= 0.95) {
+      recommendations.push(isPhone
+        ? 'Si no necesitas toda la autonomía, activa la carga optimizada o el límite de carga que ofrezca tu teléfono y evita dejarlo conectado al 100 % durante muchas horas.'
+        : 'Como suele permanecer conectado, revisa si tu laptop ofrece un límite de carga o modo de cuidado de batería y úsalo cuando no necesites autonomía completa.');
+    } else if (p.smin < 0.15) {
+      recommendations.push('Evita que las descargas profundas hasta niveles muy bajos sean una rutina; conectar el equipo antes de que llegue casi a cero puede reducir el esfuerzo de la batería.');
+    } else {
+      recommendations.push('Mantén hábitos de carga moderados: evita tanto las descargas frecuentes hasta cero como permanecer innecesariamente al 100 % durante periodos largos.');
+    }
+
+    if (p.cycles >= 2 || p.chargeC >= 1.5 || p.dischargeC >= 1.5) {
+      recommendations.push('Cuando sea posible, evita combinar cargas rápidas con tareas de alto consumo por periodos prolongados; en una laptop, usa una superficie firme que no obstruya la ventilación.');
+    } else {
+      recommendations.push('Usa cargadores y accesorios compatibles recomendados por el fabricante; no es necesario agotar por completo la batería antes de volver a cargarla.');
+    }
+
+    if (soh < 0.8) {
+      recommendations.push('La proyección baja del 80 % dentro del horizonte seleccionado. Si en el uso real notas menos autonomía o apagados inesperados, consulta el diagnóstico de batería del sistema o un servicio técnico autorizado antes de decidir un reemplazo.');
+    } else {
+      recommendations.push('Revisa periódicamente la autonomía real y el diagnóstico de batería del sistema. Si notas cambios importantes, contrástalos con una medición del propio equipo.');
+    }
+
+    return recommendations;
+  }
+
+  function renderReport() {
+    const p = readParams(), result = current;
+    const soh = result.soh[result.soh.length - 1];
+    const spec = variant.spec;
+    const health = (soh * 100).toFixed(1);
+    const capacity = spec.capacityMAh
+      ? Math.round(spec.capacityMAh * soh) + ' mAh'
+      : (spec.capacityWh * soh).toFixed(1) + ' Wh';
+    const status = soh >= 0.8 ? 'Proyección favorable' : soh >= 0.5 ? 'Desgaste notable proyectado' : 'Desgaste avanzado proyectado';
+    const eol = result.eolYears !== null
+      ? 'En este escenario, el modelo estima que la batería podría cruzar el umbral del 80 % en aproximadamente ' + result.eolYears.toFixed(1) + ' años.'
+      : 'En este escenario, el modelo no proyecta que la batería cruce el umbral del 80 % durante los ' + p.years + ' años simulados.';
+    const recommendations = reportRecommendations(p, soh);
+    const generatedAt = new Intl.DateTimeFormat('es-MX', { dateStyle: 'long', timeStyle: 'short' }).format(new Date());
+    const escapeHTML = value => String(value).replace(/[&<>"']/g, char => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[char]);
+
+    $('printReport').innerHTML = `
+      <header class="report-header">
+        <div class="report-brand">Healthy <strong>Battery</strong></div>
+        <p>Reporte de estado estimado de batería</p>
+        <h1>${escapeHTML(variant.name)}</h1>
+        <span>Generado el ${escapeHTML(generatedAt)}</span>
+      </header>
+      <section class="report-status">
+        <div><span class="report-label">Salud estimada al horizonte</span><strong>${health} %</strong><small>${escapeHTML(status)}</small></div>
+        <div><span class="report-label">Capacidad restante estimada</span><strong>${escapeHTML(capacity)}</strong><small>Capacidad nominal: ${escapeHTML(capacityLabel(spec))}</small></div>
+        <div><span class="report-label">Vida útil estimada hasta 80 %</span><strong>${result.eolYears !== null ? result.eolYears.toFixed(1) + ' años' : '> ' + p.years + ' años'}</strong><small>${escapeHTML(eol)}</small></div>
+      </section>
+      <p class="report-disclaimer"><strong>Importante:</strong> este documento resume una simulación basada en el modelo, las especificaciones del equipo y el escenario seleccionado. No es una lectura de sensores ni un diagnóstico de la batería real; los resultados pueden diferir del uso cotidiano.</p>
+      <section class="report-section">
+        <h2>Escenario analizado</h2>
+        <dl class="report-scenario">
+          <div><dt>Equipo</dt><dd>${escapeHTML(variant.name)}${spec.modelName && spec.modelName !== variant.name ? ' · ' + escapeHTML(spec.modelName) : ''}</dd></div>
+          <div><dt>Temperatura ambiente</dt><dd>${p.tempC} °C</dd></div>
+          <div><dt>Temperatura máxima de celda estimada</dt><dd>${result.tMax.toFixed(1)} °C</dd></div>
+          <div><dt>Corriente de carga / descarga</dt><dd>${p.chargeC} C / ${p.dischargeC} C</dd></div>
+          <div><dt>Rango de carga</dt><dd>${Math.round(p.smin * 100)}–${Math.round(p.smax * 100)} %</dd></div>
+          <div><dt>Ciclos diarios · horizonte</dt><dd>${p.cycles} · ${p.years} años</dd></div>
+        </dl>
+      </section>
+      <section class="report-section">
+        <h2>Hábitos que ayudan a cuidar tu batería</h2>
+        <p class="report-message">Las baterías de ion-litio pierden capacidad gradualmente con el tiempo y el uso. No es motivo para alarmarse: mantener temperaturas moderadas, evitar extremos de carga cuando sea práctico y seguir las opciones de cuidado del fabricante puede ayudar a ralentizar ese desgaste.</p>
+        <ol class="report-recommendations">${recommendations.map(item => '<li>' + escapeHTML(item) + '</li>').join('')}</ol>
+      </section>
+      <footer class="report-footer">Estimación educativa · Healthy Battery · Los datos técnicos dependen de la ficha del modelo; el uso real, la edad y el estado de cada batería pueden cambiar el resultado.</footer>`;
+    window.print();
+  }
+
+  $('reportBtn').addEventListener('click', renderReport);
   CONTROLS.forEach(c => $(c.id).addEventListener('input', update));
 
   // Al cambiar de modelo: sliders con los valores del modelo, URL actualizada y recálculo

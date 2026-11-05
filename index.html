@@ -32,6 +32,7 @@
     <symbol id="i-pulse" viewBox="0 0 24 24"><path d="M2 12h4l2.5-6 4 12 2.5-6H22"/></symbol>
     <symbol id="i-check" viewBox="0 0 24 24"><path d="m6 12.5 4 4 8-9"/></symbol>
     <symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-game" viewBox="0 0 24 24"><path d="M6.5 8h11a4.5 4.5 0 0 1 4.3 5.8l-1 3.2a2.5 2.5 0 0 1-4.1 1.1L14 16h-4l-2.7 2.1a2.5 2.5 0 0 1-4.1-1.1l-1-3.2A4.5 4.5 0 0 1 6.5 8Z"/><path d="M7 11v4M5 13h4M16.5 12h.01M19 14h.01"/></symbol>
   </svg>
 
   <!-- ============ ENCABEZADO ============ -->
@@ -44,6 +45,7 @@
     <nav class="nav" aria-label="Principal">
       <a href="#inicio" class="active"><svg class="ic"><use href="#i-home"/></svg>Inicio</a>
       <a href="#dispositivos"><svg class="ic"><use href="#i-phone"/></svg>Dispositivos</a>
+      <a href="#juego"><svg class="ic"><use href="#i-game"/></svg>Juego</a>
       <a href="#consejos"><svg class="ic"><use href="#i-bulb"/></svg>Consejos</a>
       <a href="#acerca"><svg class="ic"><use href="#i-info"/></svg>Acerca de</a>
     </nav>
@@ -123,6 +125,28 @@
       </ul>
 
       <span class="slogan">¡Tu batería<br>también importa!</span>
+    </section>
+
+    <!-- ============ JUEGO EDUCATIVO ============ -->
+    <section class="game-section" id="juego" aria-labelledby="t-juego">
+      <div class="game-promo">
+        <div class="game-promo-icon" aria-hidden="true"><svg class="ic"><use href="#i-game"/></svg></div>
+        <div class="game-promo-copy">
+          <span class="game-eyebrow">APRENDE JUGANDO</span>
+          <h2 id="t-juego">Conviértete en guardián del litio</h2>
+          <p>Explora un centro de clasificación 3D, inspecciona baterías y decide cómo actuar ante una batería en buen estado, dañada o lista para reciclar.</p>
+          <ul class="game-points">
+            <li>Exploración interactiva en 3D</li>
+            <li>Decisiones de seguridad y reciclaje</li>
+            <li>Guía educativa integrada</li>
+          </ul>
+        </div>
+        <a class="game-launch" href="juego/index.html">
+          <span>Jugar Lithium Guard 3D</span>
+          <svg class="ic"><use href="#i-arrow"/></svg>
+        </a>
+        <small class="game-requirement">Requiere navegador compatible con WebGL y conexión a internet.</small>
+      </div>
     </section>
 
     <!-- ============ CONSEJOS ============ -->

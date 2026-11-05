@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Lithium Guard 3D: simulador educativo sobre el uso seguro, los riesgos y el reciclaje de baterías de litio.">
+  <title>Lithium Guard 3D | Simulador educativo</title>
+  <link rel="stylesheet" href="./css/styles.css">
+  <link rel="stylesheet" href="./css/integration.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="game">
+    <canvas id="scene" aria-label="Escenario 3D del centro de gestión de baterías"></canvas>
+
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark">LG</span><div><strong>LITHIUM GUARD</strong><small>SIMULADOR 3D</small></div></div>
+      <a class="home-link" href="../index.html">← Menú principal</a>
+      <div class="top-stats">
+        <div class="stat"><span>♻</span><div><small>RECICLAJE</small><b id="recycleScore">0</b></div></div>
+        <div class="stat"><span>🛡</span><div><small>SEGURIDAD</small><b id="safetyScore">100%</b></div></div>
+        <button class="icon-btn" id="helpBtn" title="Ayuda">?</button>
+        <button class="icon-btn" id="soundBtn" title="Sonido">♫</button>
+      </div>
+    </header>
+
+    <aside class="mission-card">
+      <div class="eyebrow">MISIÓN ACTUAL</div>
+      <h1 id="missionTitle">Centro de clasificación</h1>
+      <p id="missionText">Inspecciona las baterías y decide cómo gestionarlas.</p>
+      <div class="progress-track"><div id="progressBar"></div></div>
+      <small id="progressText">0 de 3 decisiones correctas</small>
+    </aside>
+
+    <div class="crosshair">+</div>
+    <div class="bottom-hint"><kbd>W A S D</kbd> Mover <kbd>RATÓN</kbd> Mirar <kbd>CLIC</kbd> Seleccionar <kbd>E</kbd> Interactuar</div>
+    <div class="toast" id="toast" role="status"></div>
+
+    <section class="object-panel hidden" id="objectPanel">
+      <button class="close-btn" id="closePanel">×</button>
+      <div class="eyebrow" id="objectTag">OBJETO DETECTADO</div>
+      <h2 id="objectName">Batería de litio</h2>
+      <p id="objectDescription"></p>
+      <div class="condition" id="objectCondition"></div>
+      <div class="choice-label">¿QUÉ DECISIÓN TOMARÍAS?</div>
+      <div class="choices" id="choices"></div>
+      <div class="feedback hidden" id="feedback"></div>
+    </section>
+
+    <section class="overlay" id="startScreen">
+      <div class="modal start-modal">
+        <div class="hero-icon">🔋</div>
+        <div class="eyebrow">SIMULACIÓN EDUCATIVA INTERACTIVA</div>
+        <h1>LITHIUM <span>GUARD</span> 3D</h1>
+        <p class="lead">Tus decisiones protegen a las personas y al planeta.</p>
+        <div class="intro-grid">
+          <div><b>01</b><strong>Inspecciona</strong><small>Observa el estado de cada batería.</small></div>
+          <div><b>02</b><strong>Decide</strong><small>Elige la acción responsable.</small></div>
+          <div><b>03</b><strong>Aprende</strong><small>Descubre buenas prácticas.</small></div>
+        </div>
+        <button class="primary-btn" id="startBtn">INICIAR SIMULACIÓN <span>→</span></button>
+        <p class="micro">Controles: WASD para moverte · Ratón para mirar · Clic en una batería para inspeccionarla.</p>
+      </div>
+    </section>
+
+    <section class="overlay hidden" id="helpScreen">
+      <div class="modal help-modal">
+        <button class="close-btn" id="helpClose">×</button>
+        <div class="eyebrow">GUÍA DEL OPERADOR</div>
+        <h2>Cómo jugar</h2>
+        <ul>
+          <li><b>W, A, S, D:</b> caminar por el centro.</li>
+          <li><b>Ratón:</b> orientar la cámara. Haz clic en una batería para inspeccionarla.</li>
+          <li><b>E:</b> interactuar con el objeto que tengas cerca.</li>
+          <li>Lee la información y selecciona la decisión más segura.</li>
+          <li>Una batería hinchada, con fugas, humo, olor extraño o calor excesivo debe dejar de usarse. No la manipules: aléjate y solicita orientación especializada.</li>
+        </ul>
+        <p class="notice">Esta simulación es educativa. No reemplaza instrucciones del fabricante, protocolos locales ni capacitación de emergencias.</p>
+      </div>
+    </section>
+
+    <section class="overlay hidden" id="resultScreen">
+      <div class="modal result-modal">
+        <div class="hero-icon">🌎</div>
+        <div class="eyebrow">SIMULACIÓN COMPLETADA</div>
+        <h2 id="resultTitle">¡Buen trabajo, operador!</h2>
+        <p id="resultMessage"></p>
+        <div class="result-stats">
+          <div><b id="finalScore">0</b><small>PUNTOS</small></div>
+          <div><b id="finalCorrect">0/3</b><small>DECISIONES CORRECTAS</small></div>
+          <div><b id="finalSafety">100%</b><small>ÍNDICE DE SEGURIDAD</small></div>
+        </div>
+        <div class="learn-box"><b>RECUERDA</b><p>Las baterías de litio no deben depositarse en la basura común ni en el contenedor convencional de reciclaje. Llévalas a un punto de recolección especializado.</p></div>
+        <button class="primary-btn" id="restartBtn">VOLVER A JUGAR ↻</button>
+      </div>
+    </section>
+    <footer class="footer">LITHIUM GUARD 3D <span>·</span> Educación ambiental y prevención</footer>
+  </div>
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>

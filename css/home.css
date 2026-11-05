@@ -183,6 +183,28 @@ button{font:inherit}
   font:600 1.6rem/1.05 'Caveat','Segoe Script','Bradley Hand','Brush Script MT',cursive;color:var(--accent);text-align:left}
 .slogan::after{content:"";display:block;height:3px;margin-top:4px;border-radius:3px;background:currentColor;transform:skewX(-20deg)}
 
+/* ============ Juego educativo ============ */
+.game-section{max-width:1260px;margin:0 auto;padding:24px clamp(16px,3vw,40px) 28px}
+.game-promo{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:22px;
+  padding:clamp(22px,4vw,42px);overflow:hidden;border:1px solid rgba(112,240,189,.28);border-radius:26px;
+  color:#effaf4;background:radial-gradient(ellipse at 90% 0%,rgba(45,157,113,.25),transparent 45%),linear-gradient(135deg,#10251f,#081714);
+  box-shadow:0 18px 40px rgba(2,20,16,.22)}
+.game-promo-icon{display:grid;place-items:center;width:76px;height:76px;border:1px solid rgba(112,240,189,.35);border-radius:22px;
+  color:#062018;background:linear-gradient(135deg,#72edb8,#c4f16a);box-shadow:0 10px 24px rgba(82,222,158,.2)}
+.game-promo-icon .ic{width:38px;height:38px}
+.game-promo-copy{max-width:680px}
+.game-eyebrow{color:#70f0bd;font-size:.75rem;font-weight:800;letter-spacing:.16em}
+.game-promo h2{margin:5px 0 8px;font-size:clamp(1.45rem,2.7vw,2rem);line-height:1.15;letter-spacing:-.025em}
+.game-promo p{color:#b7d0c3;line-height:1.6}
+.game-points{display:flex;flex-wrap:wrap;gap:8px 18px;margin:16px 0 0;padding:0;list-style:none;color:#d9ece2;font-size:.88rem}
+.game-points li::before{content:"✓";margin-right:7px;color:#70f0bd;font-weight:800}
+.game-launch{display:flex;align-items:center;justify-content:center;gap:12px;min-height:52px;padding:12px 18px;border-radius:14px;
+  color:#062018;background:linear-gradient(90deg,#72edb8,#c4f16a);font-weight:800;white-space:nowrap;
+  box-shadow:0 10px 24px rgba(82,222,158,.2);transition:transform .2s,filter .2s}
+.game-launch:hover,.game-launch:focus-visible{transform:translateY(-2px);filter:brightness(1.06);outline:none}
+.game-launch .ic{width:20px;height:20px}
+.game-requirement{grid-column:2 / 4;margin-top:-12px;color:#78978a;font-size:.78rem}
+
 /* ============ Consejos y Acerca de ============ */
 .info{max-width:1100px;margin:0 auto;padding:40px clamp(16px,3vw,40px) 30px}
 .info h2{font-size:clamp(1.5rem,2.4vw,2rem);font-weight:800;margin-bottom:22px}
@@ -206,6 +228,9 @@ button{font:inherit}
 }
 @media (max-width:900px){
   .cards{grid-template-columns:1fr}
+  .game-promo{grid-template-columns:auto minmax(0,1fr)}
+  .game-launch{grid-column:2;justify-self:start}
+  .game-requirement{grid-column:2;margin-top:-12px}
   .perks{flex-direction:column;align-items:flex-start;padding:0 8px}
   .perks li{justify-content:flex-start}
   .perks li+li{border-left:0}
@@ -223,6 +248,13 @@ button{font:inherit}
   .dev-head{flex-direction:column;align-items:flex-start;gap:12px}
   .dev h2{font-size:1.7rem}
   .chips li{white-space:normal}
+}
+@media (max-width:520px){
+  .game-promo{grid-template-columns:1fr;gap:14px;border-radius:20px}
+  .game-promo-icon{width:58px;height:58px;border-radius:17px}
+  .game-promo-icon .ic{width:30px;height:30px}
+  .game-launch{grid-column:1;width:100%;white-space:normal}
+  .game-requirement{grid-column:1;margin-top:0}
 }
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important;scroll-behavior:auto!important}

@@ -1,5 +1,5 @@
 /* imagenes.js: ilustraciones SVG del equipo y medidor de salud de la batería (sin dependencias).
-   Si existe la foto real en img/equipos/, app.js la muestra en lugar de la ilustración. */
+   Si existe una foto del equipo, app.js la muestra dentro de la pantalla. */
 const DeviceArt = (() => {
   'use strict';
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
