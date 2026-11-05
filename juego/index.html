@@ -36,6 +36,7 @@
       <p id="missionText">Inspecciona las baterías y decide cómo gestionarlas.</p>
       <div class="progress-track"><div id="progressBar"></div></div>
       <small id="progressText">0 de 3 decisiones correctas</small>
+      <div class="learning-tip"><span>💡 PISTA</span><p id="missionTip">Busca deformaciones, fugas, olor extraño o calor excesivo.</p></div>
     </aside>
 
     <div class="crosshair">+</div>
@@ -50,7 +51,7 @@
       <div class="condition" id="objectCondition"></div>
       <div class="choice-label">¿QUÉ DECISIÓN TOMARÍAS?</div>
       <div class="choices" id="choices"></div>
-      <div class="feedback hidden" id="feedback"></div>
+      <div class="feedback hidden" id="feedback" role="status" aria-live="polite"></div>
     </section>
 
     <section class="overlay" id="startScreen">

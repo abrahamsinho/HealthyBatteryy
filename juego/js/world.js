@@ -2,16 +2,16 @@ import * as THREE from 'three';
 
 export function createWorld(scene) {
   const mat = (color, roughness=0.75, metalness=0) => new THREE.MeshStandardMaterial({color, roughness, metalness});
-  const floorMat = mat(0x18332c);
-  const wallMat = mat(0x29453c);
-  const darkMat = mat(0x10241f);
-  const mintMat = new THREE.MeshStandardMaterial({color:0x63e6ad, emissive:0x123f2e, roughness:.35});
+  const floorMat = mat(0x202c44);
+  const wallMat = mat(0x303d5b);
+  const darkMat = mat(0x18223d);
+  const mintMat = new THREE.MeshStandardMaterial({color:0x6cebd6, emissive:0x16483f, roughness:.35});
   const objects = [];
 
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(42, 32), floorMat);
   floor.rotation.x = -Math.PI/2; floor.position.y = 0; floor.receiveShadow = true; scene.add(floor);
 
-  const grid = new THREE.GridHelper(42, 42, 0x477967, 0x294a3d);
+  const grid = new THREE.GridHelper(42, 42, 0x6b83c2, 0x344565);
   grid.position.y = .012; grid.material.transparent = true; grid.material.opacity = .22; scene.add(grid);
 
   function box(w,h,d,x,y,z,material, cast=true) {
@@ -27,12 +27,12 @@ export function createWorld(scene) {
 
   // Estaciones de clasificación
   const stationXs=[-12,0,12];
-  const stationColors=[0x3a9d71,0xd79b42,0x578bc4];
+  const stationColors=[0x42c7a6,0xf06b7f,0x718eff];
   const stationNames=['REUTILIZABLE','DAÑADA / RIESGO','RECOLECCIÓN'];
   stationXs.forEach((x,i)=>{
-    box(5.2,.35,4.2,x,.45,-8,mat(0x233e34));
+    box(5.2,.35,4.2,x,.45,-8,mat(0x293653));
     box(5.0,.16,4.0,x,.7,-8,mat(stationColors[i]));
-    box(4.7,.12,3.7,x,.84,-8,mat(0x152b24));
+    box(4.7,.12,3.7,x,.84,-8,mat(0x202c48));
     // pilares de luz
     for(const dx of [-2.3,2.3]) box(.09,2.2,.09,x+dx,1.9,-10.0,mat(stationColors[i]));
   });
@@ -67,20 +67,21 @@ export function createWorld(scene) {
     objects.push(group);
     return group;
   }
-  battery('Batería en buen estado','Batería de un dispositivo que no presenta deformaciones, fugas, olor extraño ni calentamiento anormal. Aún puede utilizarse siguiendo las instrucciones del fabricante.','ESTADO: NORMAL',0x238c68,[-12,0,-2],'good');
-  battery('Batería hinchada','La carcasa está deformada. La hinchazón puede indicar daño interno y riesgo de incendio. No la cargues, perfores ni intentes abrirla.','ALERTA: DAÑO FÍSICO',0xb64a46,[0,0,-2],'damaged');
-  battery('Batería usada al final de su vida útil','Ya no se necesita o ha llegado al final de su vida útil. Debe llevarse a un programa o punto de recolección especializado, nunca a la basura común.','ESTADO: RESIDUO',0x7c9186,[12,0,-2],'used');
+  battery('Batería en buen estado','Batería de un dispositivo que no presenta deformaciones, fugas, olor extraño ni calentamiento anormal. Aún puede utilizarse siguiendo las instrucciones del fabricante.','ESTADO: NORMAL',0x29b995,[-12,0,-2],'good');
+  battery('Batería hinchada','La carcasa está deformada. La hinchazón puede indicar daño interno y riesgo de incendio. No la cargues, perfores ni intentes abrirla.','ALERTA: DAÑO FÍSICO',0xe65370,[0,0,-2],'damaged');
+  battery('Batería usada al final de su vida útil','Ya no se necesita o ha llegado al final de su vida útil. Debe llevarse a un programa o punto de recolección especializado, nunca a la basura común.','ESTADO: RESIDUO',0xe5b84f,[12,0,-2],'used');
 
   // Cargador certificado y contenedor de recolección (decoración interactiva)
-  const charger=box(1.2,1.1,.8,-8,.65,5,mat(0x356c9c)); charger.userData={name:'Cargador del fabricante',description:'Utiliza el cargador recomendado por el fabricante y sigue las instrucciones de carga. Evita cargadores incompatibles o dañados.',condition:'BUENA PRÁCTICA',type:'info'};objects.push(charger);
-  const bin=box(2.0,1.8,1.5,12, .9,-8,mat(0x267a61));bin.userData={name:'Punto de recolección especializado',description:'Las baterías de litio deben entregarse en puntos de recolección o gestores autorizados. No deben ir a la basura ni al contenedor convencional.',condition:'DESTINO CORRECTO',type:'info'};objects.push(bin);
+  const charger=box(1.2,1.1,.8,-8,.65,5,mat(0x6989ed)); charger.userData={name:'Cargador del fabricante',description:'Utiliza el cargador recomendado por el fabricante y sigue las instrucciones de carga. Evita cargadores incompatibles o dañados.',condition:'BUENA PRÁCTICA',type:'info'};objects.push(charger);
+  const bin=box(2.0,1.8,1.5,12, .9,-8,mat(0x37bfa2));bin.userData={name:'Punto de recolección especializado',description:'Las baterías de litio deben entregarse en puntos de recolección o gestores autorizados. No deben ir a la basura ni al contenedor convencional.',condition:'DESTINO CORRECTO',type:'info'};objects.push(bin);
 
   // Luminarias y luces
   for(let x=-14;x<=14;x+=7){
-    const lamp= new THREE.PointLight(0x9af5cb,35,18);lamp.position.set(x,4,-3);scene.add(lamp);
-    const bulb=new THREE.Mesh(new THREE.SphereGeometry(.12,8,8),new THREE.MeshBasicMaterial({color:0xb9ffdb}));bulb.position.set(x,4,-3);scene.add(bulb);
+    const color=x<0?0x69e9d1:x===0?0xff8192:0x8eabff;
+    const lamp= new THREE.PointLight(color,42,18);lamp.position.set(x,4,-3);scene.add(lamp);
+    const bulb=new THREE.Mesh(new THREE.SphereGeometry(.12,8,8),new THREE.MeshBasicMaterial({color}));bulb.position.set(x,4,-3);scene.add(bulb);
   }
-  scene.background=new THREE.Color(0x0a1917);
-  scene.fog=new THREE.Fog(0x0a1917,22,43);
+  scene.background=new THREE.Color(0x10162b);
+  scene.fog=new THREE.Fog(0x10162b,22,43);
   return objects;
 }

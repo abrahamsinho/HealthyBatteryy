@@ -21,22 +21,34 @@ const ui={
  start:document.querySelector('#startScreen'),help:document.querySelector('#helpScreen'),result:document.querySelector('#resultScreen'),
  panel:document.querySelector('#objectPanel'),title:document.querySelector('#objectName'),desc:document.querySelector('#objectDescription'),
  tag:document.querySelector('#objectTag'),condition:document.querySelector('#objectCondition'),choices:document.querySelector('#choices'),
- feedback:document.querySelector('#feedback'),toast:document.querySelector('#toast')
+ feedback:document.querySelector('#feedback'),toast:document.querySelector('#toast'),tip:document.querySelector('#missionTip')
 };
 let started=false,locked=false,selected=null,score=0,correct=0,safety=100,decided=new Set(),primaryDecisions=new Set(),yaw=0,pitch=0;
 const raycaster=new THREE.Raycaster(),mouse=new THREE.Vector2();
 const keys={};
 const player={x:0,z:12,speed:7};
 const scenarios={
- good:{correct:'use',options:[['use','Continuar utilizándola siguiendo las instrucciones'],['trash','Tirarla a la basura común'],['damage','Abrirla para revisar su interior']],explain:'¡Correcto! Si la batería está en buen estado, úsala y cárgala según las indicaciones del fabricante. No la modifiques.'},
- damaged:{correct:'stop',options:[['stop','Dejar de usarla, no manipularla y alejarse'],['charge','Conectarla para comprobar si funciona'],['open','Perforarla para liberar la presión']],explain:'¡Correcto! Una batería hinchada puede estar dañada. Suspende su uso, no la cargues ni la abras. Mantén distancia y consulta al fabricante o a un gestor especializado. Si hay humo o fuego, evacúa y llama a emergencias.'},
- used:{correct:'recycle',options:[['recycle','Llevarla a un punto de recolección especializado'],['trash','Depositarla en la basura común'],['bin','Ponerla en el contenedor convencional de reciclaje']],explain:'¡Correcto! Las baterías de litio requieren canales de recolección especializados. No deben ir a la basura ni al reciclaje municipal convencional.'},
- info:{correct:'learn',options:[['learn','Aplicar esta recomendación'],['ignore','Ignorar la recomendación']],explain:'¡Muy bien! Las buenas prácticas reducen el riesgo de daños, sobrecalentamiento e incidentes.'}
+ good:{correct:'use',options:[['use','Continuar utilizándola siguiendo las instrucciones'],['trash','Tirarla a la basura común'],['damage','Abrirla para revisar su interior']],explain:'En buen estado: úsala y cárgala según las indicaciones del fabricante. No la modifiques.',mistake:'Tirarla a la basura o abrirla puede causar contaminación o un cortocircuito.'},
+ damaged:{correct:'stop',options:[['stop','Dejar de usarla, no manipularla y alejarse'],['charge','Conectarla para comprobar si funciona'],['open','Perforarla para liberar la presión']],explain:'Ante una batería hinchada: suspende el uso, no la cargues ni la abras. No la manipules; aléjate y pide orientación especializada. Si hay humo o fuego, evacúa y llama a emergencias.',mistake:'Cargar, perforar o manipular una batería dañada puede provocar un incendio.'},
+ used:{correct:'recycle',options:[['recycle','Llevarla a un punto de recolección especializado'],['trash','Depositarla en la basura común'],['bin','Ponerla en el contenedor convencional de reciclaje']],explain:'Al final de su vida útil, llévala a un punto especializado, nunca a la basura ni al reciclaje convencional.',mistake:'La basura común y los contenedores municipales no son canales seguros para baterías de litio.'},
+ info:{correct:'learn',options:[['learn','Aplicar esta recomendación'],['ignore','Ignorar la recomendación']],explain:'Sigue las indicaciones del fabricante y evita cargadores incompatibles o dañados.',mistake:'Ignorar las recomendaciones o usar cargadores incompatibles puede dañar la batería y sobrecalentarla.'}
 };
 function showToast(msg){ui.toast.textContent=msg;ui.toast.classList.add('show');setTimeout(()=>ui.toast.classList.remove('show'),2200)}
-function updateHUD(){document.querySelector('#recycleScore').textContent=score;document.querySelector('#safetyScore').textContent=safety+'%';document.querySelector('#progressBar').style.width=(correct/3*100)+'%';document.querySelector('#progressText').textContent=correct+' de 3 decisiones correctas';}
+function updateHUD(){
+ document.querySelector('#recycleScore').textContent=score;
+ document.querySelector('#safetyScore').textContent=safety+'%';
+ document.querySelector('#progressBar').style.width=(correct/3*100)+'%';
+ document.querySelector('#progressText').textContent=correct+' de 3 decisiones correctas';
+ const tips=[
+  'Pista: busca deformaciones, fugas, olor extraño o calor excesivo.',
+  'Uso diario: sigue la guía del fabricante y utiliza un cargador compatible.',
+  'Fin de vida: entrega la batería en un punto especializado, no en la basura.',
+  '¡Misión completa! Recuerda: seguridad primero y reciclaje especializado.'
+ ];
+ ui.tip.textContent=tips[primaryDecisions.size];
+}
 function openObject(obj){
- selected=obj;const d=obj.userData;ui.title.textContent=d.name;ui.desc.textContent=d.description;ui.condition.textContent=d.condition;ui.tag.textContent=d.type==='damaged'?'⚠ OBJETO CON RIESGO':'OBJETO DETECTADO';
+ selected=obj;const d=obj.userData;ui.title.textContent=d.name;ui.desc.textContent=d.description;ui.condition.textContent=d.condition;ui.tag.textContent=d.type==='damaged'?'⚠ OBJETO CON RIESGO':d.type==='used'?'♻ FIN DE VIDA':d.type==='good'?'✓ EN BUEN ESTADO':'💡 BUENA PRÁCTICA';ui.panel.dataset.type=d.type;
  ui.feedback.classList.add('hidden');ui.choices.innerHTML='';
  const scenario=scenarios[d.type]||scenarios.info;
  scenario.options.forEach(([value,label])=>{const b=document.createElement('button');b.className='choice-btn';b.textContent=label;b.onclick=()=>choose(value,scenario,d.type,obj);ui.choices.appendChild(b)});
@@ -45,7 +57,7 @@ function openObject(obj){
 function choose(value,scenario,type,obj){
  if(decided.has(obj.uuid)){showToast('Ya tomaste una decisión sobre este objeto.');return}
  const good=value===scenario.correct;
- const fb=ui.feedback;fb.textContent=(good?'✓ DECISIÓN CORRECTA. ':'✕ DECISIÓN INCORRECTA. ')+scenario.explain;fb.classList.remove('hidden','bad');if(!good)fb.classList.add('bad');
+ const fb=ui.feedback;fb.textContent=good?'✓ ¡Correcto! '+scenario.explain:'✕ No es la opción segura. '+scenario.mistake+' Lo recomendable: '+scenario.explain;fb.classList.remove('hidden','bad');if(!good)fb.classList.add('bad');
  if(good){score+=100;correct=Math.min(3,correct+1)}else{safety=Math.max(0,safety-20)}
  decided.add(obj.uuid);if(type!=='info')primaryDecisions.add(obj.uuid);updateHUD();
  [...ui.choices.children].forEach(b=>b.disabled=true);
